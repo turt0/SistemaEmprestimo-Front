@@ -3,10 +3,8 @@
 > [!NOTE]
 > O Sistema está escrito em Java 1.8 e usa um banco de dados MySQL 8.3.0  
 
-## Componentes:
-- Arthur Ramos Bilsland (Aarthaz, USER, 1072419595)  
+## Componentes: 
 - Caio Candido Cunha (turt0, caio, Pichau)  
-- Pedro Otávio de Jesus da Rosa (PedroOtavioDeJesus)  
 
 ## Levantamento de requisitos:  
 ### Requisitos funcionais:  
