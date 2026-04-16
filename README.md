@@ -33,5 +33,3 @@
 ##
 ![image](https://github.com/Aarthaz/SistemaEmprestimo/assets/165083337/e80242bf-145a-44e5-8cb2-becfed29d41a)![image](https://github.com/Aarthaz/SistemaEmprestimo/assets/165083337/143c9563-511a-4999-9b04-b5cae35511ec)
 
-
-TESTE PULL REQUEST
