@@ -4,7 +4,7 @@
 > O Sistema está escrito em Java 1.8 e usa um banco de dados MySQL 8.3.0  
 
 ## Componentes: 
-- Caio Candido Cunha (turt0, caio, Pichau)  
+- Caio Candido Cunha, RA 1072413246 (turt0, caio, Pichau)  
 
 ## Levantamento de requisitos:  
 ### Requisitos funcionais:  
