@@ -16,4 +16,11 @@ public interface AmigoServico {
      */
     @WebMethod(operationName = "listar")
     ArrayList<Amigo> listar();
+    
+    /**
+     * Carrega um amigo específico pelo seu id.
+     * Retorna null se nenhum amigo for encontrado.
+     */
+    @WebMethod(operationName = "carregar")
+    Amigo carregar(@WebParam(name = "id") int id);
 }
