@@ -36,4 +36,9 @@ public interface FerramentaServico {
     @WebMethod(operationName = "alterar")
     boolean alterar(@WebParam(name = "ferramenta") Ferramenta ferramenta);
     
+    /**
+     * Remove uma ferramenta pelo seu id.
+     */
+    @WebMethod(operationName = "deletar")
+    boolean deletar(@WebParam(name = "id") int id);
 }
