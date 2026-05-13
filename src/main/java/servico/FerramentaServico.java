@@ -24,4 +24,10 @@ public interface FerramentaServico {
     @WebMethod(operationName = "carregar")
     Ferramenta carregar(@WebParam(name = "id") int id);
     
+    /**
+     * Insere uma nova ferramenta. O id é gerado pelo servidor.
+     */
+    @WebMethod(operationName = "inserir")
+    boolean inserir(@WebParam(name = "ferramenta") Ferramenta ferramenta);
+    
 }
