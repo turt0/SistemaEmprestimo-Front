@@ -35,4 +35,10 @@ public interface AmigoServico {
      */
     @WebMethod(operationName = "alterar")
     boolean alterar(@WebParam(name = "amigo") Amigo amigo);
+    
+    /**
+     * Remove um amigo pelo seu id.
+     */
+    @WebMethod(operationName = "deletar")
+    boolean deletar(@WebParam(name = "id") int id);
 }
