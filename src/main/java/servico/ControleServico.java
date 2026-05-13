@@ -20,4 +20,17 @@ public class ControleServico {
      */
     private static final String NAMESPACE = "http://servico/";
     
+    /**
+     * Retorna o proxy do serviço de Amigo.
+     */
+    public static AmigoServico getAmigoServico() {
+        try {
+            URL url = new URL(URL_BASE + "/AmigoServico?wsdl");
+            QName qName = new QName(NAMESPACE, "AmigoServicoImplService");
+            Service service = Service.create(url, qName);
+            return service.getPort(AmigoServico.class);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL do AmigoServico inválida.", e);
+        }
+    }
 }
