@@ -29,4 +29,10 @@ public interface AmigoServico {
      */
     @WebMethod(operationName = "inserir")
     boolean inserir(@WebParam(name = "amigo") Amigo amigo);
+    
+    /**
+     * Altera os dados de um amigo existente. O id deve estar preenchido.
+     */
+    @WebMethod(operationName = "alterar")
+    boolean alterar(@WebParam(name = "amigo") Amigo amigo);
 }
