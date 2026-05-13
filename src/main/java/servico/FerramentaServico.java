@@ -30,4 +30,10 @@ public interface FerramentaServico {
     @WebMethod(operationName = "inserir")
     boolean inserir(@WebParam(name = "ferramenta") Ferramenta ferramenta);
     
+    /**
+     * Altera os dados de uma ferramenta existente.
+     */
+    @WebMethod(operationName = "alterar")
+    boolean alterar(@WebParam(name = "ferramenta") Ferramenta ferramenta);
+    
 }
