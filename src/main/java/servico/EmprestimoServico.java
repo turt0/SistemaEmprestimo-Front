@@ -48,4 +48,10 @@ public interface EmprestimoServico {
      */
     @WebMethod(operationName = "gerarResumoRelatorio")
     String gerarResumoRelatorio();
+    
+    /**
+     * Verifica se o amigo possui empréstimos pendentes.
+     */
+    @WebMethod(operationName = "amigoTemPendencia")
+    boolean amigoTemPendencia(@WebParam(name = "idAmigo") int idAmigo);
 }
