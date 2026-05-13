@@ -13,20 +13,17 @@
         <exec.mainClass>principal.Principal</exec.mainClass>
     </properties>
     <dependencies>
-        <!--  API do Java EE Web (apenas para acesso aos pacotes javax.xml.ws e javax.jws no compile).  -->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-        <!--  API do JAXB (necessaria em JDK 11+ pois foi removida do JDK).  -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
         </dependency>
-        <!--  Runtime do JAX-WS para o cliente desktop. Empacota classes necessarias em runtime.  -->
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
