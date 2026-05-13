@@ -47,4 +47,18 @@ public class ControleServico {
             throw new RuntimeException("URL do FerramentaServico inválida.", e);
         }
     }
+    
+    /**
+     * Retorna o proxy do serviço de Empréstimo.
+     */
+    public static EmprestimoServico getEmprestimoServico() {
+        try {
+            URL url = new URL(URL_BASE + "/EmprestimoServico?wsdl");
+            QName qName = new QName(NAMESPACE, "EmprestimoServicoImplService");
+            Service service = Service.create(url, qName);
+            return service.getPort(EmprestimoServico.class);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL do EmprestimoServico inválida.", e);
+        }
+    }
 }
