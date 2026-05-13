@@ -36,4 +36,10 @@ public interface EmprestimoServico {
     @WebMethod(operationName = "deletar")
     boolean deletar(@WebParam(name = "id") int id);
     
+    
+    /**
+     * Registra a devolução de um empréstimo.
+     */
+    @WebMethod(operationName = "registrarDevolucao")
+    boolean registrarDevolucao(@WebParam(name = "id") int id);
 }
