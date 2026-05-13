@@ -23,4 +23,10 @@ public interface AmigoServico {
      */
     @WebMethod(operationName = "carregar")
     Amigo carregar(@WebParam(name = "id") int id);
+    
+    /**
+     * Insere um novo amigo. O id é gerado pelo servidor.
+     */
+    @WebMethod(operationName = "inserir")
+    boolean inserir(@WebParam(name = "amigo") Amigo amigo);
 }
