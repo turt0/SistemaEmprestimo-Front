@@ -42,4 +42,10 @@ public interface EmprestimoServico {
      */
     @WebMethod(operationName = "registrarDevolucao")
     boolean registrarDevolucao(@WebParam(name = "id") int id);
+    
+    /**
+     * Retorna o relatorio dos empréstimos.
+     */
+    @WebMethod(operationName = "gerarResumoRelatorio")
+    String gerarResumoRelatorio();
 }
