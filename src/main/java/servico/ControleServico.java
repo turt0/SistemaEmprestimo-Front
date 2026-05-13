@@ -21,7 +21,7 @@ public class ControleServico {
     private static final String NAMESPACE = "http://servico/";
     
     /**
-     * Retorna o proxy do serviço de Amigo.
+     * Retorna o serviço de Amigo.
      */
     public static AmigoServico getAmigoServico() {
         try {
@@ -31,6 +31,20 @@ public class ControleServico {
             return service.getPort(AmigoServico.class);
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL do AmigoServico inválida.", e);
+        }
+    }
+    
+    /**
+     * Retorna o serviço de Ferramenta.
+     */
+    public static FerramentaServico getFerramentaServico() {
+        try {
+            URL url = new URL(URL_BASE + "/FerramentaServico?wsdl");
+            QName qName = new QName(NAMESPACE, "FerramentaServicoImplService");
+            Service service = Service.create(url, qName);
+            return service.getPort(FerramentaServico.class);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL do FerramentaServico inválida.", e);
         }
     }
 }
