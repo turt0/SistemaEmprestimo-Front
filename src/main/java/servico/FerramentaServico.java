@@ -41,4 +41,11 @@ public interface FerramentaServico {
      */
     @WebMethod(operationName = "deletar")
     boolean deletar(@WebParam(name = "id") int id);
+    
+    /**
+     * Retorna o custo total das ferramentas cadastradas.
+     * Usado pelo relatório de gasto total.
+     */
+    @WebMethod(operationName = "getTotalGasto")
+    double getTotalGasto();
 }
