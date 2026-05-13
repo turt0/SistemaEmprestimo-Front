@@ -18,4 +18,10 @@ public interface FerramentaServico {
     @WebMethod(operationName = "listar")
     ArrayList<Ferramenta> listar();
     
+    /**
+     * Carrega uma ferramenta específica pelo seu id.
+     */
+    @WebMethod(operationName = "carregar")
+    Ferramenta carregar(@WebParam(name = "id") int id);
+    
 }
