@@ -1,15 +1,20 @@
 package visao;
 
-import modelo.Amigo;
 import javax.swing.JOptionPane;
+import modelo.Amigo;
+import servico.AmigoServico;
+import servico.ControleServico;
 
 public class FrmCadastroAmigo extends javax.swing.JFrame {
 
-    private Amigo objetoamigo;
+    /**
+     * Proxy do webservice de Amigo.
+     */
+    private AmigoServico amigoServico;
 
     public FrmCadastroAmigo() {
         initComponents();
-        this.objetoamigo = new Amigo();
+        this.amigoServico = ControleServico.getAmigoServico();
     }
 
     @SuppressWarnings("unchecked")
@@ -138,7 +143,9 @@ public class FrmCadastroAmigo extends javax.swing.JFrame {
                 telefone = this.JTFTelefone.getText();
             }
 
-            if (this.objetoamigo.insertAmigoBD(nome, telefone)) {
+            // Cria o DTO. O id fica zerado porque o servidor gera.
+            Amigo amigo = new Amigo(0, nome, telefone);
+            if (this.amigoServico.inserir(amigo)) {
                 JOptionPane.showMessageDialog(null, "Amigo Cadastrado com Sucesso!");
 
                 this.JTFNome.setText("");
@@ -146,11 +153,7 @@ public class FrmCadastroAmigo extends javax.swing.JFrame {
                 this.JTFTelefone.setText("");
             }
 
-            System.out.println(this.objetoamigo.getMinhaLista().toString());
-
-            
             //Pega um erro e mostra ele para o usuario
-             
         } catch (Mensagem erro) {
             JOptionPane.showMessageDialog(null, erro.getMessage());
         } catch (NumberFormatException erro2) {

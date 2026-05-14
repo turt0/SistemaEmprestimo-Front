@@ -4,19 +4,24 @@
  */
 package visao;
 
-import modelo.Ferramenta;
 import javax.swing.JOptionPane;
+import modelo.Ferramenta;
+import servico.ControleServico;
+import servico.FerramentaServico;
 
 public class FrmCadastroFerramenta extends javax.swing.JFrame {
 
-    private Ferramenta objetoferramenta; //cria vinculo com Ferramenta.java
+    /**
+     * Proxy do webservice de Ferramenta.
+     */
+    private FerramentaServico ferramentaServico;
 
     /**
      * Creates new form FrmCadastroFerramenta
      */
     public FrmCadastroFerramenta() {
         initComponents();
-        this.objetoferramenta = new Ferramenta(); //carrega objeto de ferramenta
+        this.ferramentaServico = ControleServico.getFerramentaServico();
     }
 
     /**
@@ -147,29 +152,27 @@ public class FrmCadastroFerramenta extends javax.swing.JFrame {
                 marca = this.JTFMarca.getText();
             }
 
-            if(this.JTFCusto.getText().length() <= 0){
+            if (this.JTFCusto.getText().length() <= 0) {
                 throw new Mensagem("O valor deve ser maior que zero");
-            } else{
+            } else {
                 custo = Double.parseDouble(this.JTFCusto.getText());
             }  //mencionado apenas pela aplicação, pois a ferramenta pode ser gratis-
-            
-            //envia os dados para o controlador cadastrar
-            if (this.objetoferramenta.insertFerramentaBD(nome, marca, custo)) {
+
+            // Cria o DTO. O id fica zerado porque o servidor gera.
+            Ferramenta ferramenta = new Ferramenta(0, nome, marca, custo);
+            if (this.ferramentaServico.inserir(ferramenta)) {
                 JOptionPane.showMessageDialog(rootPane, "Ferramenta cadastrada com sucesso.");
                 //limpa os campos da interface
                 this.JTFNome.setText("");
                 this.JTFMarca.setText("");
                 this.JTFCusto.setText("");
             }
-
-            //exibe a ferramenta cadastrada no console
-            System.out.println(this.objetoferramenta.getMinhaLista().toString());
         } catch (Mensagem erro) {
             JOptionPane.showMessageDialog(null, erro.getMessage());
         } catch (NumberFormatException erro2) {
             JOptionPane.showMessageDialog(null, "Informe um número válido.");
         }
-        
+
     }//GEN-LAST:event_JBCadastrarActionPerformed
 
     private void JTFNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFNomeActionPerformed
