@@ -1,17 +1,23 @@
 package visao;
 
-import modelo.Amigo;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modelo.Amigo;
+import servico.AmigoServico;
+import servico.ControleServico;
 
 public class FrmGerenciarAmigo extends javax.swing.JFrame {
 
-    private Amigo objetoamigo;
+    /**
+     * Proxy do webservice de Amigo. Substitui o antigo "objetoamigo"
+     * que era um modelo com lógica de DAO embutida.
+     */
+    private AmigoServico amigoServico;
 
     public FrmGerenciarAmigo() {
         initComponents();
-        this.objetoamigo = new Amigo();
+        this.amigoServico = ControleServico.getAmigoServico();
         this.carregaTabela();
     }
 
@@ -186,13 +192,14 @@ public class FrmGerenciarAmigo extends javax.swing.JFrame {
             }
 
             if (this.JTableAmigo.getSelectedRow() == -1) {
-                throw new Mensagem("Primeiro Selecione uma Ferramenta para Alterar");
+                throw new Mensagem("Primeiro Selecione um Amigo para Alterar");
             } else {
                 id = Integer.parseInt(this.JTableAmigo.getValueAt(this.JTableAmigo.getSelectedRow(), 0).toString());
             }
 
-            //envia os dados para o cadastro
-            if (this.objetoamigo.updateAmigoBD(id, nome, telefone)) {
+            // Monta o DTO e envia ao webservice.
+            Amigo amigo = new Amigo(id, nome, telefone);
+            if (this.amigoServico.alterar(amigo)) {
                 JOptionPane.showMessageDialog(rootPane, "Amigo foi alterado com sucesso.");
 
                 //limpa os campos da interface
@@ -200,7 +207,6 @@ public class FrmGerenciarAmigo extends javax.swing.JFrame {
                 this.JTFTelefone.setText("");
             }
 
-            //exibe no console o amigo alterado
             //se ocorrer algum erro a interface mostra
         } catch (Mensagem erro) {
             JOptionPane.showMessageDialog(null, erro.getMessage());
@@ -227,16 +233,14 @@ public class FrmGerenciarAmigo extends javax.swing.JFrame {
             //se clicar em sim
             if (respostaUsuario == 0) {
 
-                if (this.objetoamigo.deleteAmigoBD(id)) {
+                if (this.amigoServico.deletar(id)) {
                     // limpa os campos
                     this.JTFNome.setText("");
                     this.JTFTelefone.setText("");
-                    ;
                     JOptionPane.showMessageDialog(rootPane, "Amigo Apagado com Sucesso!");
                 }
             }
 
-            System.out.println(this.objetoamigo.getMinhaLista().toString());
         } catch (Mensagem erro) {
             JOptionPane.showMessageDialog(null, erro.getMessage());
         } finally {
@@ -246,7 +250,7 @@ public class FrmGerenciarAmigo extends javax.swing.JFrame {
     }//GEN-LAST:event_JBApagarActionPerformed
 
     /*
-    * Se o usuario clicar em cima dos nomes na tabela 
+    * Se o usuario clicar em cima dos nomes na tabela
      */
     private void JTableAmigoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTableAmigoMouseClicked
 
@@ -265,14 +269,17 @@ public class FrmGerenciarAmigo extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_JTableAmigoAncestorAdded
 
+    /**
+     * Recarrega a tabela buscando os amigos do webservice.
+     */
     public void carregaTabela() {
         DefaultTableModel modelo = (DefaultTableModel) this.JTableAmigo.getModel();
-        
+
         // Posiciona na primeira linha da tabela
         modelo.setNumRows(0);
-        
-        // Carrega a lista de objetos amigo
-        ArrayList<Amigo> minhaLista = objetoamigo.getMinhaLista();
+
+        // Busca a lista atualizada via webservice.
+        ArrayList<Amigo> minhaLista = this.amigoServico.listar();
         for (Amigo a : minhaLista) {
             modelo.addRow(new Object[]{
                 a.getId(),
@@ -289,7 +296,7 @@ public class FrmGerenciarAmigo extends javax.swing.JFrame {
                     break;
                 }
             }
-            
+
         //se ocorrer um erro a interface mostra
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(FrmGerenciarAmigo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

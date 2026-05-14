@@ -7,44 +7,44 @@ package visao;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import modelo.Ferramenta;
+import servico.ControleServico;
+import servico.FerramentaServico;
 
-/**
- *
- * @author 1072413246
- */
 public class FrmRelatorioFerramentas extends javax.swing.JFrame {
-    private Ferramenta objetoferramenta;
+
+    /**
+     * Proxy do webservice de Ferramenta.
+     */
+    private FerramentaServico ferramentaServico;
 
     /**
      * Creates new form FrmRelatorioFerramentas
      */
     public FrmRelatorioFerramentas() {
         initComponents();
-        this.objetoferramenta = new Ferramenta(); //carrega objeto de ferramenta
+        this.ferramentaServico = ControleServico.getFerramentaServico();
         this.carregaTabela();
     }
 
     /**
-     * Carrega os dados da tabela e calcula o total gasto.
+     * Carrega os dados da tabela buscando do webservice e calcula o total gasto.
      */
     public void carregaTabela() {
         DefaultTableModel modelo = (DefaultTableModel) this.JTFerramentas.getModel();
         modelo.setNumRows(0); //posiciona na primeira linha da tabela
 
-        //Carrega a lista de objetos ferramenta
-        ArrayList<Ferramenta> minhaLista = objetoferramenta.getMinhaLista();
-        double total = 0;
+        //Carrega a lista de objetos ferramenta via webservice
+        ArrayList<Ferramenta> minhaLista = this.ferramentaServico.listar();
         for (Ferramenta a : minhaLista) {
             modelo.addRow(new Object[]{
                 a.getId(),
                 a.getNome(),
                 a.getMarca(),
-                a.getCusto(),
-            });
-
-            //Soma o custo de cada ferramenta para mostrar no total
-            total += a.getCusto();
+                a.getCusto(),});
         }
+
+        // O total agora vem direto do servidor (via método específico do serviço).
+        double total = this.ferramentaServico.getTotalGasto();
 
         //Atualiza o campo visual do total gasto
         JLTotal.setText(String.format("R$ %.2f", total));

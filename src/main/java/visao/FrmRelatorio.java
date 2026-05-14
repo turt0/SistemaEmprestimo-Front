@@ -1,11 +1,12 @@
 package visao;
 
-import dao.EmprestimoDAO;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import servico.ControleServico;
+import servico.EmprestimoServico;
 
 /**
  * Tela responsável por exibir o relatório textual de empréstimos.
@@ -41,11 +42,11 @@ public class FrmRelatorio extends JFrame {
     }
 
     /**
-     * Carrega o texto do relatório na tela.
+     * Carrega o texto do relatório na tela buscando do webservice.
      */
     private void carregarRelatorio() {
-        EmprestimoDAO dao = new EmprestimoDAO();
-        areaRelatorio.setText(dao.gerarResumoRelatorio());
+        EmprestimoServico servico = ControleServico.getEmprestimoServico();
+        areaRelatorio.setText(servico.gerarResumoRelatorio());
     }
 
     /**

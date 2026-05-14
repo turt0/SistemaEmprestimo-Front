@@ -1,35 +1,39 @@
 package visao;
 
-import modelo.Ferramenta;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modelo.Ferramenta;
+import servico.ControleServico;
+import servico.FerramentaServico;
 
 public class FrmGerenciarFerramenta extends javax.swing.JFrame {
 
-    private Ferramenta objetoferramenta; //cria vinculo com Ferramenta.java
+    /**
+     * Proxy do webservice de Ferramenta.
+     */
+    private FerramentaServico ferramentaServico;
 
     /**
      * Creates new form FrmGerenciarFerramenta
      */
     public FrmGerenciarFerramenta() {
         initComponents();
-        this.objetoferramenta = new Ferramenta(); //carrega objeto de ferramenta
+        this.ferramentaServico = ControleServico.getFerramentaServico();
         this.carregaTabela();
     }
 
     public void carregaTabela() {
         DefaultTableModel modelo = (DefaultTableModel) this.JTableFerramentas.getModel();
         modelo.setNumRows(0); //posiciona na primeira linha da tabela
-        //Carrega a lista de objetos ferramenta
-        ArrayList<Ferramenta> minhaLista = objetoferramenta.getMinhaLista();
+        //Carrega a lista de objetos ferramenta via webservice
+        ArrayList<Ferramenta> minhaLista = this.ferramentaServico.listar();
         for (Ferramenta a : minhaLista) {
             modelo.addRow(new Object[]{
                 a.getId(),
                 a.getNome(),
                 a.getMarca(),
-                a.getCusto(),
-            });
+                a.getCusto(),});
         }
     }
 
@@ -158,23 +162,23 @@ public class FrmGerenciarFerramenta extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBApagarActionPerformed
-        try{
+        try {
             //validando os dados da interface
             int id = 0;
-            if (this.JTableFerramentas.getSelectedRow() == -1){
+            if (this.JTableFerramentas.getSelectedRow() == -1) {
                 throw new Mensagem("Primeiro selecione uma Ferramenta para apagar.");
-            } else{
+            } else {
                 id = Integer.parseInt(this.JTableFerramentas.getValueAt(this.JTableFerramentas.getSelectedRow(), 0).toString());
             }
-            
+
             // retorna 0 -> primeiro botão | 1 -> segundo botão | 2 -> terceiro botão
             int respostaUsuario = JOptionPane.showConfirmDialog(null, "Tem certeza que quer apagar esta Ferramenta?");
-            
+
             if (respostaUsuario == 0) {// clicou em SIM
-                
-                // envia os dados para a Ferramenta processar
-                if (this.objetoferramenta.deleteFerramentaBD(id)) {
-                    
+
+                // envia a remoção para o webservice
+                if (this.ferramentaServico.deletar(id)) {
+
                     // limpa os campos
                     this.JTFNome.setText("");
                     this.JTFMarca.setText("");
@@ -182,12 +186,9 @@ public class FrmGerenciarFerramenta extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(rootPane, "Ferramenta apagada com sucesso.");
                 }
             }
-            
-            //atualiza a tabela
-            System.out.println(this.objetoferramenta.getMinhaLista().toString());
-        } catch(Mensagem erro){
+        } catch (Mensagem erro) {
             JOptionPane.showMessageDialog(null, erro.getMessage());
-        } finally{
+        } finally {
             //atualiza a tabela
             carregaTabela();
         }
@@ -198,7 +199,7 @@ public class FrmGerenciarFerramenta extends javax.swing.JFrame {
     }//GEN-LAST:event_JBCancelarActionPerformed
 
     private void JTableFerramentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTableFerramentasMouseClicked
-        
+
         if (this.JTableFerramentas.getSelectedRow() != -1) {
             String nome = this.JTableFerramentas.getValueAt(this.JTableFerramentas.getSelectedRow(), 1).toString();
             String marca = this.JTableFerramentas.getValueAt(this.JTableFerramentas.getSelectedRow(), 2).toString();
@@ -211,55 +212,54 @@ public class FrmGerenciarFerramenta extends javax.swing.JFrame {
     }//GEN-LAST:event_JTableFerramentasMouseClicked
 
     private void JBAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAlterarActionPerformed
-        try{
-        //recebendo dados da interface
-        int id = 0;
-        String nome = "";
-        String marca = "";
-        double custo = 0;
+        try {
+            //recebendo dados da interface
+            int id = 0;
+            String nome = "";
+            String marca = "";
+            double custo = 0;
 
             //mensagens de erro
             if (this.JTFNome.getText().length() < 2) {
-            throw new Mensagem("Nome deve conter ao menos 2 caracteres.");
-        
+                throw new Mensagem("Nome deve conter ao menos 2 caracteres.");
+
             } else {
                 nome = this.JTFNome.getText();
             }
-            
+
             if (this.JTFMarca.getText().length() < 2) {
                 throw new Mensagem("Marca precisa de 2 caracteres no minimo");
             } else {
                 marca = this.JTFMarca.getText();
             }
-            
-            if(this.JTFCusto.getText().length() <= 0){
+
+            if (this.JTFCusto.getText().length() <= 0) {
                 throw new Mensagem("O valor deve ser maior que zero");
-            } else{
+            } else {
                 custo = Double.parseDouble(this.JTFCusto.getText());
             }  //mencionado apenas pela aplicação, pois a ferramenta pode ser gratis-
-            
+
             if (this.JTableFerramentas.getSelectedRow() == -1) {
                 throw new Mensagem("Primeiro Selecione uma Ferramenta para Alterar");
             } else {
                 id = Integer.parseInt(this.JTableFerramentas.getValueAt(this.JTableFerramentas.getSelectedRow(), 0).toString());
             }
 
-            //envia os dados para a ferramenta cadastrar
-            if (this.objetoferramenta.updateFerramentaBD(id, nome, marca, custo)) {
+            // Monta o DTO e envia a alteração ao webservice.
+            Ferramenta ferramenta = new Ferramenta(id, nome, marca, custo);
+            if (this.ferramentaServico.alterar(ferramenta)) {
                 JOptionPane.showMessageDialog(rootPane, "Ferramenta alterada com sucesso.");
                 //limpa os campos da interface
                 this.JTFNome.setText("");
                 this.JTFMarca.setText("");
                 this.JTFCusto.setText("");
             }
-            //exibe no console a ferramenta alterada
-            //System.out.println(this.objetoferramenta.getMinhaLista().toString());
-            
+
         } catch (Mensagem erro) {
             JOptionPane.showMessageDialog(null, erro.getMessage());
         } catch (NumberFormatException erro2) {
             JOptionPane.showMessageDialog(null, "Informe um número válido.");
-        } finally{
+        } finally {
             //atualiza a tabela
             carregaTabela();
         }

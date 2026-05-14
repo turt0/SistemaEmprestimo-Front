@@ -1,31 +1,57 @@
 package visao;
 
-import dao.AmigoDAO;
-import dao.EmprestimoDAO;
-import dao.FerramentaDAO;
-import modelo.Amigo;
-import modelo.Emprestimo;
-import modelo.Ferramenta;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JOptionPane;
+import modelo.Amigo;
+import modelo.Emprestimo;
+import modelo.Ferramenta;
+import servico.AmigoServico;
+import servico.ControleServico;
+import servico.EmprestimoServico;
+import servico.FerramentaServico;
 
 /**
  * Tela responsável por cadastrar e registrar devoluções de empréstimos.
+ *
+ * Consome três webservices: AmigoServico (para popular o combo de amigos),
+ * FerramentaServico (combo de ferramentas) e EmprestimoServico (criar
+ * empréstimo, registrar devolução e verificar pendências).
  */
 public class FrmEmprestimo extends javax.swing.JFrame {
 
-    private List<Amigo> amigos;
+    /**
+     * Proxies dos três webservices consumidos por esta tela.
+     */
+    private AmigoServico amigoServico;
+    private FerramentaServico ferramentaServico;
+    private EmprestimoServico emprestimoServico;
+
+    /**
+     * Lista de amigos exibida no combo, mantida para resolver o id
+     * a partir do nome selecionado.
+     */
+    private ArrayList<Amigo> amigos;
+
+    /**
+     * Lista de ferramentas exibida no combo, mantida pelo mesmo motivo
+     * (resolver id a partir do nome selecionado).
+     */
+    private ArrayList<Ferramenta> ferramentas;
 
     /**
      * Creates new form FrmEmprestimo.
      */
     public FrmEmprestimo() {
         initComponents();
+        this.amigoServico = ControleServico.getAmigoServico();
+        this.ferramentaServico = ControleServico.getFerramentaServico();
+        this.emprestimoServico = ControleServico.getEmprestimoServico();
+
         loadAmigos();
         loadFerramentas();
         btnDelete.setText("Registrar devolução");
@@ -193,11 +219,10 @@ public class FrmEmprestimo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     /**
-     * Carrega os amigos no combo box.
+     * Carrega os amigos no combo box via webservice.
      */
     private void loadAmigos() {
-        AmigoDAO amigoDAO = new AmigoDAO();
-        amigos = amigoDAO.getMinhaLista();
+        amigos = this.amigoServico.listar();
         cmbAmigo.removeAllItems();
         for (Amigo amigo : amigos) {
             cmbAmigo.addItem(amigo.getNome());
@@ -205,11 +230,10 @@ public class FrmEmprestimo extends javax.swing.JFrame {
     }
 
     /**
-     * Carrega as ferramentas no combo box.
+     * Carrega as ferramentas no combo box via webservice.
      */
     private void loadFerramentas() {
-        FerramentaDAO ferramentaDAO = new FerramentaDAO();
-        List<Ferramenta> ferramentas = ferramentaDAO.getMinhaLista();
+        ferramentas = this.ferramentaServico.listar();
         cmbFerramenta.removeAllItems();
         for (Ferramenta ferramenta : ferramentas) {
             cmbFerramenta.addItem(ferramenta.getNome());
@@ -217,7 +241,10 @@ public class FrmEmprestimo extends javax.swing.JFrame {
     }
 
     /**
-     * Adiciona um novo empréstimo no banco.
+     * Adiciona um novo empréstimo via webservice.
+     *
+     * Antes de inserir, consulta o RF08: se o amigo tiver alguma
+     * ferramenta não devolvida, mostra um aviso e pede confirmação.
      */
     private void addEmprestimo(java.awt.event.ActionEvent evt) {
         String dataEmprestimoText = txtDataEmprestimo.getText();
@@ -258,8 +285,6 @@ public class FrmEmprestimo extends javax.swing.JFrame {
 
         // Procura a ferramenta selecionada no combo box.
         Ferramenta ferramentaSelecionada = null;
-        FerramentaDAO ferramentaDAO = new FerramentaDAO();
-        List<Ferramenta> ferramentas = ferramentaDAO.getMinhaLista();
         for (Ferramenta ferramenta : ferramentas) {
             if (ferramenta.getNome().equals(nomeFerramentaSelecionada)) {
                 ferramentaSelecionada = ferramenta;
@@ -272,10 +297,23 @@ public class FrmEmprestimo extends javax.swing.JFrame {
             return;
         }
 
-        // Cria o objeto de empréstimo com devolução real nula.
+        // RF08 - verifica se o amigo tem empréstimos pendentes.
+        if (this.emprestimoServico.amigoTemPendencia(amigoSelecionado.getId())) {
+            int resposta = JOptionPane.showConfirmDialog(this,
+                    "Atenção: " + amigoSelecionado.getNome()
+                    + " ainda possui ferramenta(s) não devolvida(s).\n"
+                    + "Deseja prosseguir com o novo empréstimo mesmo assim?",
+                    "Pendência encontrada",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (resposta != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
+        // Cria o DTO de empréstimo com devolução real nula.
         Emprestimo emprestimo = new Emprestimo(0, dataEmprestimo, dataDevolucao, null, amigoSelecionado, ferramentaSelecionada);
-        EmprestimoDAO dao = new EmprestimoDAO();
-        boolean sucesso = dao.insertEmprestimoBD(emprestimo);
+        boolean sucesso = this.emprestimoServico.inserir(emprestimo);
 
         if (sucesso) {
             JOptionPane.showMessageDialog(this, "Empréstimo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -289,7 +327,7 @@ public class FrmEmprestimo extends javax.swing.JFrame {
     }
 
     /**
-     * Registra a devolução de um empréstimo pelo ID.
+     * Registra a devolução de um empréstimo pelo ID via webservice.
      */
     private void deleteEmprestimo(java.awt.event.ActionEvent evt) {
         String idText = JOptionPane.showInputDialog(this, "Digite o ID do empréstimo a ser devolvido:");
@@ -305,8 +343,7 @@ public class FrmEmprestimo extends javax.swing.JFrame {
             return;
         }
 
-        EmprestimoDAO dao = new EmprestimoDAO();
-        boolean sucesso = dao.registrarDevolucaoBD(id);
+        boolean sucesso = this.emprestimoServico.registrarDevolucao(id);
 
         if (sucesso) {
             JOptionPane.showMessageDialog(this, "Devolução registrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
