@@ -12,7 +12,7 @@
     <ul>
         <li><a href="FrmGerenciarAmigo.jsp">Gerenciar Amigos</a></li>
         <li><a href="FrmGerenciarFerramenta.jsp">Gerenciar Ferramentas</a></li>
-        <li><a href="FrmGerenciarEmprestimo.jsp">Gerenciar EmprÃ©stimos</a></li>
+        <li><a href="FrmGerenciarEmprestimo.jsp">Gerenciar Empréstimos</a></li>
     </ul>
 </body>
 </html>
