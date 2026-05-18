@@ -40,17 +40,4 @@
             <version>2.3.3</version>
         </dependency>
     </dependencies>
-    <build>
-        <finalName>SistemaEmprestimo-Front</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
