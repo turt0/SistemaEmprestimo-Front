@@ -4,13 +4,12 @@
     <groupId>com.unisul</groupId>
     <artifactId>SistemaEmprestimo</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>SistemaEmprestimo</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <exec.mainClass>principal.Principal</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>
@@ -35,12 +34,23 @@
             <artifactId>javax.jws-api</artifactId>
             <version>1.1</version>
         </dependency>
-        
- 
         <dependency>
             <groupId>jakarta.xml.ws</groupId>
             <artifactId>jakarta.xml.ws-api</artifactId>
             <version>2.3.3</version>
         </dependency>
     </dependencies>
+    <build>
+        <finalName>SistemaEmprestimo-Front</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
