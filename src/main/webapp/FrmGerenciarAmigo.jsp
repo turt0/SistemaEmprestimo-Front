@@ -1,4 +1,3 @@
-<%@page import="java.util.ArrayList"%>
 <%@page import="modelo.Amigo"%>
 <%@page import="servico.AmigoServico"%>
 <%@page import="servico.ControleServico"%>
@@ -18,9 +17,9 @@
     <%
         try {
             AmigoServico servico = ControleServico.getAmigoServico();
-            ArrayList<Amigo> amigos = servico.listar();
+            Amigo[] amigos = servico.listar();
 
-            if (amigos == null || amigos.isEmpty()) {
+            if (amigos == null || amigos.length == 0) {
     %>
         <p class="mensagem">Nenhum amigo cadastrado.</p>
     <%

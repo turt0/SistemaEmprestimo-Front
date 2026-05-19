@@ -1,6 +1,5 @@
 package servico;
- 
-import java.util.ArrayList;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -15,7 +14,7 @@ public interface AmigoServico {
      * Retorna a lista de todos os amigos cadastrados.
      */
     @WebMethod(operationName = "listar")
-    ArrayList<Amigo> listar();
+    Amigo[] listar();
     
     /**
      * Carrega um amigo específico pelo seu id.

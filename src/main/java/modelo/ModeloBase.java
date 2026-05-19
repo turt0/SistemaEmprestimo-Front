@@ -1,5 +1,8 @@
 package modelo;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+ 
+@XmlSeeAlso({Amigo.class, Ferramenta.class, Emprestimo.class})
 public class ModeloBase {
 
     /**
